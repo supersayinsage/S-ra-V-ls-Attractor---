@@ -1,0 +1,152 @@
+Pooh = Entity(seed=100)      # gentle attractor
+Piglet = Entity(seed=200)    # anxious branching
+Tigger = Entity(seed=300)    # chaotic injection
+Rabbit = Entity(seed=400)    # order‑imposer
+Eeyore = Entity(seed=500)    # dampening field
+["interact", "distort", "entangle", "collapse"]
+A = Pooh
+B = Piglet
+sequence = morph_sequence(A, B)
+plot_sequence(sequence)
+P → G → T → R → E → O
+P G P R
+T P E
+G R O P
+Pooh   = Entity(seed=100)
+Piglet = Entity(seed=200)
+Tigger = Entity(seed=300)
+Rabbit = Entity(seed=400)
+Eeyore = Entity(seed=500)
+Owl    = Entity(seed=600)
+chain = [Pooh, Piglet, Tigger, Rabbit, Eeyore, Owl]
+sequence = morph_sequence(Pooh, Piglet)
+plot_sequence(sequence)
+POOH_OPS = {
+    "P": "interact",                 # Pooh
+    "G": "interact_distort",         # Piglet
+    "T": "distort",                  # Tigger
+    "R": "entangle",                 # Rabbit
+    "E": "collapse",                 # Eeyore
+    "O": "entangle_collapse"         # Owl
+}
+def compile_chain(chain):
+    return [POOH_OPS[c] for c in chain]
+def compile_chain(chain):
+    return [POOH_OPS[c] for c in chain]
+P G T R E O
+["interact", "interact_distort", "distort", "entangle", "collapse", "entangle_collapse"]
+def visualize_pooh_chain(chain, A, B):
+    compiled = compile_chain(chain)
+    states = []
+
+    current = A.copy()
+
+    for op in compiled:
+        if op == "interact":
+            current = interact(current, B)
+        elif op == "interact_distort":
+            current = distort(interact(current, B))
+        elif op == "distort":
+            current = distort(current)
+        elif op == "entangle":
+            current = entangle(current, B)
+        elif op == "collapse":
+            current.field = collapse(current)
+        elif op == "entangle_collapse":
+            current.field = collapse(entangle(current, B))
+
+        states.append(current.field)
+
+    plot_sequence(states)
+def pooh_multiverse():
+    seeds = [Pooh, Piglet, Tigger, Rabbit, Eeyore, Owl]
+    names = ["P", "G", "T", "R", "E", "O"]
+
+    for i in range(len(seeds)):
+        for j in range(len(seeds)):
+            if i != j:
+                chain = names[i] + names[j] + names[i]
+                visualize_pooh_chain(chain, seeds[i], seeds[j])
+import random
+
+def mutate_chain(chain, rate=0.2):
+    ops = ["P", "G", "T", "R", "E", "O"]
+    new_chain = ""
+
+    for c in chain:
+        if random.random() < rate:
+            new_chain += random.choice(ops)
+        else:
+            new_chain += c
+
+    return new_chain
+def evolve_pooh_chain(chain, generations=10):
+    current = chain
+    for _ in range(generations):
+        current = mutate_chain(current)
+        print("Generation:", current)
+import numpy as np
+
+def book_to_field(stats, size=200):
+    field = np.zeros((size, size))
+
+    # Word frequency → horizontal gradient
+    field += np.interp(np.linspace(0, 1, size), [0, 1], stats["word_freq_mean"])
+
+    # Sentence length → vertical gradient
+    field += np.interp(np.linspace(0, 1, size), [0, 1], stats["sentence_length_mean"]).reshape(-1, 1)
+
+    # Emotional tone → diagonal
+    diag = np.linspace(stats["tone_min"], stats["tone_max"], size)
+    field += np.outer(diag, diag)
+
+    # Normalize
+    field = (field - field.min()) / (field.max() - field.min())
+    return field
+pooh_stats = {
+    "word_freq_mean": 0.7,
+    "sentence_length_mean": 0.5,
+    "tone_min": 0.2,
+    "tone_max": 0.4
+}
+
+piglet_stats = {
+    "word_freq_mean": 0.5,
+    "sentence_length_mean": 0.3,
+    "tone_min": 0.4,
+    "tone_max": 0.6
+}
+
+tigger_stats = {
+    "word_freq_mean": 0.6,
+    "sentence_length_mean": 0.4,
+    "tone_min": 0.6,
+    "tone_max": 0.9
+}
+
+rabbit_stats = {
+    "word_freq_mean": 0.4,
+    "sentence_length_mean": 0.7,
+    "tone_min": 0.3,
+    "tone_max": 0.5
+}
+
+eeyore_stats = {
+    "word_freq_mean": 0.3,
+    "sentence_length_mean": 0.6,
+    "tone_min": 0.1,
+    "tone_max": 0.2
+}
+
+owl_stats = {
+    "word_freq_mean": 0.5,
+    "sentence_length_mean": 0.8,
+    "tone_min": 0.3,
+    "tone_max": 0.7
+}
+Pooh   = Entity(0); Pooh.field   = book_to_field(pooh_stats)
+Piglet = Entity(0); Piglet.field = book_to_field(piglet_stats)
+Tigger = Entity(0); Tigger.field = book_to_field(tigger_stats)
+Rabbit = Entity(0); Rabbit.field = book_to_field(rabbit_stats)
+Eeyore = Entity(0); Eeyore.field = book_to_field(eeyore_stats)
+Owl    = Entity(0); Owl.field    = book_to_field(owl_stats)
